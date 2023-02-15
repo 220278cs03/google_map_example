@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:google_map_usage/domain/repository/main_repository.dart';
 import 'package:google_map_usage/domain/service/marker_image_cropper.dart';
 import 'package:google_map_usage/utils/info.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../domain/model/route_model.dart';
+
 class MainController extends ChangeNotifier {
   MapType type = MapType.normal;
+  MainRepo mainRepo = MainRepo();
 
   //BitmapDescriptor? myMarker;
   Set<Marker> setOfMarker = {};
   final MarkerImageCropper markerImageCropper = MarkerImageCropper();
+  List<LatLng> list = [];
 
   changeMapType(MapType mapType) {
     switch (mapType) {
@@ -103,4 +108,16 @@ class MainController extends ChangeNotifier {
     });
     notifyListeners();
   }
+
+  getRoute(BuildContext context, LatLng start, LatLng end) async {
+    DrawRouting? routing =
+    await mainRepo.getRout(context: context, start: start, end: end);
+
+    List ls = routing?.features[0].geometry.coordinates ?? [];
+    for (int i = 0; i < ls.length; i++) {
+      list.add(LatLng(ls[i][1], ls[i][0]));
+    }
+    notifyListeners();
+  }
+
 }
