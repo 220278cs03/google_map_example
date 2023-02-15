@@ -13,6 +13,14 @@ class ViewMap extends StatefulWidget {
 class _ViewMapState extends State<ViewMap> {
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MainController>().setMarkerIcon(context);
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     final event = context.read<MainController>();
@@ -23,8 +31,10 @@ class _ViewMapState extends State<ViewMap> {
           mapType: state.type, //type of map
           zoomControlsEnabled: false, //delete the button of android
           myLocationButtonEnabled: false, // delete the button of ios
+          //padding: EdgeInsets.all(16), place of Google Logo
           initialCameraPosition: const CameraPosition(
               target: LatLng(41.32916835570262, 69.22062834544106), zoom: 20),
+          markers: state.setOfMarker,
           onMapCreated: (GoogleMapController controller) {},
         ),
         floatingActionButton: FloatingActionButton.extended(
