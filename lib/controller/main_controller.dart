@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_map_usage/domain/service/marker_image_cropper.dart';
 import 'package:google_map_usage/utils/info.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MainController extends ChangeNotifier {
   MapType type = MapType.normal;
-  BitmapDescriptor? myMarker;
+
+  //BitmapDescriptor? myMarker;
   Set<Marker> setOfMarker = {};
+  final MarkerImageCropper markerImageCropper = MarkerImageCropper();
 
   changeMapType(MapType mapType) {
-    print(mapType);
     switch (mapType) {
       case MapType.normal:
         type = MapType.hybrid;
@@ -43,15 +44,47 @@ class MainController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // void setMarkerIcon(BuildContext context) async {
+  //   myMarker = await BitmapDescriptor.fromAssetImage(
+  //       const ImageConfiguration(size: Size(50, 50)), "assets/akfauni_logo.png");
+  //   setOfMarker.addAll({
+  //     Marker(
+  //         markerId: const MarkerId("1"),
+  //         draggable: true,
+  //         consumeTapEvents: true,
+  //         icon: myMarker ?? BitmapDescriptor.defaultMarker,
+  //         position: const LatLng(41.285416, 69.204007),
+  //         onTap: () {
+  //           showInfo(context, false);
+  //         },
+  //         onDrag: (location) {}),
+  //     Marker(
+  //         markerId: const MarkerId("2"),
+  //         draggable: true,
+  //         consumeTapEvents: true,
+  //         icon: myMarker ?? BitmapDescriptor.defaultMarker,
+  //         position: const LatLng(41.32700746765219, 69.42740418456385),
+  //         onTap: () {
+  //           showInfo(context, true);
+  //         },
+  //         onDrag: (location) {}),
+  //   });
+  //   notifyListeners();
+  // }
+
+  //custom marker
   void setMarkerIcon(BuildContext context) async {
-    myMarker = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(50, 50)), "assets/akfauni_logo.png");
+    var myMarker1 = await markerImageCropper.resizeAndCircle(
+        "https://kursi24.uz/upload/resize_cache/iblock/3fe/260_170_1/3fed21cae9c2e2a1cfd173f40697379d.jpg", 70);
+    var myMarker2 = await markerImageCropper.resizeAndCircle(
+        "https://play-lh.googleusercontent.com/nZ_NMBuJ-Jy5C51C4y34V-vimdfVp0xfQJoHcOyk6p2ybPyG6SbtOuzQtPtz6StRv9h8",
+        70);
     setOfMarker.addAll({
       Marker(
           markerId: const MarkerId("1"),
           draggable: true,
           consumeTapEvents: true,
-          icon: myMarker ?? BitmapDescriptor.defaultMarker,
+          icon: myMarker1,
           position: const LatLng(41.285416, 69.204007),
           onTap: () {
             showInfo(context, false);
@@ -61,7 +94,7 @@ class MainController extends ChangeNotifier {
           markerId: const MarkerId("2"),
           draggable: true,
           consumeTapEvents: true,
-          icon: myMarker ?? BitmapDescriptor.defaultMarker,
+          icon: myMarker2,
           position: const LatLng(41.32700746765219, 69.42740418456385),
           onTap: () {
             showInfo(context, true);
