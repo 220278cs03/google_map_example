@@ -122,10 +122,12 @@ class MainController extends ChangeNotifier {
   }
 
   getRoute(BuildContext context, LatLng start, LatLng end) async {
+    list.clear();
     DrawRouting? routing =
         await mainRepo.getRout(context: context, start: start, end: end);
 
     List ls = routing?.features[0].geometry.coordinates ?? [];
+
     for (int i = 0; i < ls.length; i++) {
       list.add(LatLng(ls[i][1], ls[i][0]));
     }
