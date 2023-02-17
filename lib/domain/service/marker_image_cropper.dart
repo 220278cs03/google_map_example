@@ -4,9 +4,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 // ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
+
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 
@@ -45,13 +47,13 @@ class MarkerImageCropper {
   }
 
   Future<Image> _resizeAndConvertImage(
-      Uint8List? data,
-      int height,
-      int width,
-      ) async {
+    Uint8List? data,
+    int height,
+    int width,
+  ) async {
     ByteData bytes = await rootBundle.load('assets/akfauni_logo.png');
     final img.Image? baseSizeImage =
-    img.decodeImage(data ?? bytes.buffer.asUint8List());
+        img.decodeImage(data ?? bytes.buffer.asUint8List());
     final img.Image? newSizeImage = img.decodeImage(bytes.buffer.asUint8List());
 
     final img.Image resizeImage = img.copyResize(baseSizeImage ?? newSizeImage!,

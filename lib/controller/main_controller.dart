@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_map_usage/domain/repository/main_repository.dart';
 import 'package:google_map_usage/domain/service/marker_image_cropper.dart';
 import 'package:google_map_usage/utils/info.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:osm_nominatim/osm_nominatim.dart';
 
 import '../domain/model/route_model.dart';
 
@@ -14,6 +16,15 @@ class MainController extends ChangeNotifier {
   Set<Marker> setOfMarker = {};
   final MarkerImageCropper markerImageCropper = MarkerImageCropper();
   List<LatLng> list = [];
+  late GoogleMapController mapController;
+  String? searchText;
+  late Position position;
+  late Place? place;
+
+  search(String searchText) {
+    this.searchText = searchText;
+    notifyListeners();
+  }
 
   changeMapType(MapType mapType) {
     switch (mapType) {
@@ -80,7 +91,8 @@ class MainController extends ChangeNotifier {
   //custom marker
   void setMarkerIcon(BuildContext context) async {
     var myMarker1 = await markerImageCropper.resizeAndCircle(
-        "https://kursi24.uz/upload/resize_cache/iblock/3fe/260_170_1/3fed21cae9c2e2a1cfd173f40697379d.jpg", 70);
+        "https://kursi24.uz/upload/resize_cache/iblock/3fe/260_170_1/3fed21cae9c2e2a1cfd173f40697379d.jpg",
+        70);
     var myMarker2 = await markerImageCropper.resizeAndCircle(
         "https://play-lh.googleusercontent.com/nZ_NMBuJ-Jy5C51C4y34V-vimdfVp0xfQJoHcOyk6p2ybPyG6SbtOuzQtPtz6StRv9h8",
         70);
@@ -111,7 +123,7 @@ class MainController extends ChangeNotifier {
 
   getRoute(BuildContext context, LatLng start, LatLng end) async {
     DrawRouting? routing =
-    await mainRepo.getRout(context: context, start: start, end: end);
+        await mainRepo.getRout(context: context, start: start, end: end);
 
     List ls = routing?.features[0].geometry.coordinates ?? [];
     for (int i = 0; i < ls.length; i++) {
@@ -120,4 +132,33 @@ class MainController extends ChangeNotifier {
     notifyListeners();
   }
 
+  setMap(GoogleMapController controller) {
+    mapController = controller;
+    notifyListeners();
+  }
+
+  Future<Position> determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
 }

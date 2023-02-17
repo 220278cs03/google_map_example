@@ -6,7 +6,7 @@ class DioService {
       baseUrl: 'https://api.openrouteservice.org',
       headers: {
         'Accept':
-        'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
+            'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
         'Content-type': 'application/json'
       },
     ))
